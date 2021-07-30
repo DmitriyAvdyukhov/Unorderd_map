@@ -144,6 +144,8 @@
     <ClInclude Include="hasher.h" />
     <ClInclude Include="hash_func.h" />
     <ClInclude Include="money.h" />
+    <ClInclude Include="red_black_tree.h" />
+    <ClInclude Include="tree_iterators.h" />
     <ClInclude Include="unordered_map.h" />
     <ClInclude Include="unoreder_set.h" />
     <ClInclude Include="vehicle_plate.h" />

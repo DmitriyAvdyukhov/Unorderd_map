@@ -175,9 +175,9 @@ int main() {
     //tree iterators
     {
         cout << "tree iterators"s << endl;
-        using T = TreeNode<int>;
+        using T = TreeNodeIt<int>;
 
-        T* root = N(6, N(4, N(3), N(5)), N(8, N(7)));
+        T* root = N(6, N(4, N(3), N(5)), N(8, N(7)/*, N(9)*/));
         cout << root << endl;
 
         T* iter = begin(root);
@@ -189,7 +189,7 @@ int main() {
         }
         cout << endl;
 
-        DeleteTree(root);
+        DeleteTreeIt(root);
     }
     
     return 0;

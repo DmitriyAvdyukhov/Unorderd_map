@@ -5,28 +5,28 @@
 using namespace std;
 
 template <class T>
-struct TreeNode 
+struct TreeNodeIt 
 {
     T value;
-    TreeNode* parent = nullptr;
-    TreeNode* left = nullptr;
-    TreeNode* right = nullptr;
+    TreeNodeIt* parent = nullptr;
+    TreeNodeIt* left = nullptr;
+    TreeNodeIt* right = nullptr;
 };
 
 template <class T>
-void DeleteTree(TreeNode<T>* node) 
+void DeleteTreeIt(TreeNodeIt<T>* node) 
 {
     if (!node) 
     {
         return;
     }
-    DeleteTree(node->left);
-    DeleteTree(node->right);
+    DeleteTreeIt(node->left);
+    DeleteTreeIt(node->right);
     delete node;
 }
 
 template <class T>
-void PrintTree(const TreeNode<T>* root, ostream& out = cout)
+void PrintTreeIt(const TreeNodeIt<T>* root, ostream& out = cout)
 {
     out << " ( "s;
     out << root->value;
@@ -34,7 +34,7 @@ void PrintTree(const TreeNode<T>* root, ostream& out = cout)
     {
         if (root->left)
         {
-            PrintTree(root->left, out);
+            PrintTreeIt(root->left, out);
         }
         else
         {
@@ -42,7 +42,7 @@ void PrintTree(const TreeNode<T>* root, ostream& out = cout)
         }
         if (root->right)
         {
-            PrintTree(root->right, out);
+            PrintTreeIt(root->right, out);
         }
         else 
         {
@@ -53,28 +53,135 @@ void PrintTree(const TreeNode<T>* root, ostream& out = cout)
 }
 
 template <class T>
-ostream& operator << (ostream& out, const TreeNode<T>* node)
+ostream& operator << (ostream& out, const TreeNodeIt<T>* node)
 {
-    PrintTree(node, out);
+    PrintTreeIt(node, out);
     return out;
 }
 
 template <class T>
-TreeNode<T>* begin(TreeNode<T>* node)
+TreeNodeIt<T>* begin(TreeNodeIt<T>* node)
 {
-    // место для вашей реализации
+    TreeNodeIt<T>* result{};
+    while (node->left != nullptr)
+    {
+        return begin(node->left);
+    }
+
+    if (node->left == nullptr)
+    {
+        result = node;
+    }   
+
+    return result;
 }
 
 template <class T>
-TreeNode<T>* next(TreeNode<T>* node)
-{
-    // место для вашей реализации
+TreeNodeIt<T>* next1(TreeNodeIt<T>* node)
+{       
+        if (node->parent != nullptr)
+        {
+            if (node->value < node->parent->value)
+            {
+                if (node->right == nullptr)
+                {
+                    return node->parent;
+                }
+                if (node->right != nullptr)
+                {
+                    return node->right;
+                }
+            }
+            if (node->parent->parent == nullptr)
+            {
+                if (node->value > node->parent->value
+                    && node->right == nullptr)
+                {
+                    return node->parent->parent;
+                }
+            }
+            else 
+            {
+                if (node->value > node->parent->value
+                    && node->right == nullptr 
+                    && node->value < node->parent->parent->value)
+                {
+                   return node->parent->parent;
+                }
+            }
+            if (node->value > node->parent->value
+                && node->parent != nullptr
+                && node->right != nullptr)
+            {
+                return node->right;
+            }
+            if (node->value > node->parent->value
+                && node->right != nullptr)
+            {
+                return node->right;
+            }
+        }   
+
+    if (node->parent == nullptr 
+        && node->right->left != nullptr)
+    {
+        return node->right->left;
+    }
+    if(node->parent == nullptr
+        && node->right->left == nullptr)
+    {
+        return node->right;
+    }
+    
+    return{};   
 }
 
+
+template <class T>
+TreeNodeIt<T>* next(TreeNodeIt<T>* node)
+{   
+    if (node->right != nullptr)
+    {
+        return begin(node->right);       
+    }
+    if (node->parent != nullptr)
+    {
+        if (node->right == nullptr && node == node->parent->left)
+        {
+            return node->parent;
+        }
+    }
+
+    if (node->parent == nullptr && node->right != nullptr)
+    {
+        return node->right;
+    }
+    
+    if (node->parent == nullptr && node->right == nullptr)
+    {
+        return nullptr;
+    }
+
+    if (node->parent->parent != nullptr)
+    {
+        if (node->parent->parent->right != node->parent)
+        {
+            return node->parent->parent;            
+        }
+        
+        if (node->parent->parent->right == node->parent)
+        {
+            return nullptr;
+        }
+    }  
+    return nullptr;
+}
+
+
 // функция создаёт новый узел с заданным значением и потомками
-TreeNode<int>* N(int val, TreeNode<int>* left = nullptr, TreeNode<int>* right = nullptr)
+TreeNodeIt<int>* N(int val, TreeNodeIt<int>* left = nullptr, TreeNodeIt<int>* right = nullptr)
 {
-    auto res = new TreeNode<int>{ val, nullptr, left, right };
+    auto res = new TreeNodeIt<int>{ val, nullptr, left, right };
     if (left)
     {
         left->parent = res;
@@ -87,19 +194,4 @@ TreeNode<int>* N(int val, TreeNode<int>* left = nullptr, TreeNode<int>* right = 
     return res;
 }
 
-int main() {
-    using T = TreeNode<int>;
 
-    T* root = N(6, N(4, N(3), N(5)), N(8, N(7)));
-    cout << root << endl;
-
-    T* iter = begin(root);
-
-    while (iter) {
-        cout << iter->value << " "s;
-        iter = next(iter);
-    }
-    cout << endl;
-
-    DeleteTree(root);
-}
